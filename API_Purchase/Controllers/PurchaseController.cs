@@ -44,5 +44,19 @@ namespace API_Material.Controllers
             await purchaseService.DeletePurchaseAsync(deletePurchase);
             return Ok();
         }
+
+        [HttpGet("GetPurchaseDetails", Name = "GetPurchaseDetails", Order = 5)]
+        public async Task<ActionResult> GetPurchaseDetails(int purchaseId)
+        {
+            var result = await purchaseService.GetPurchaseDetails(purchaseId);
+            return Ok(result);
+        }
+
+        [HttpPost("AddPurchaseDetails", Name = "AddPurchaseDetails", Order = 6)]
+        public async Task<ActionResult> AddPurchaseDetails(NewPurchaseDetailRequest newPurchaseDetailRequest)
+        {
+            var result = await purchaseService.AddPurchaseDetailAsync(newPurchaseDetailRequest);
+            return Ok(result);
+        }
     }
 }

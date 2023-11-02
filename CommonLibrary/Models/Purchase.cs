@@ -1,4 +1,5 @@
-﻿namespace CommonLibrary.Models
+﻿
+namespace CommonLibrary.Models
 {
     public class Purchase : BaseModel
     {

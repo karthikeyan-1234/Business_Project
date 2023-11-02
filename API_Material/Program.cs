@@ -2,6 +2,7 @@ using CommonLibrary.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Services;
 using CommonLibrary.Repositories;
+using CommonLibrary.Caching;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,7 @@ builder.Services.AddDbContext<PurchaseDBContext>(opt =>
 builder.Services.AddAutoMapper(typeof(CommonLibrary.Mapping.MappingConfig));
 
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
+builder.Services.AddScoped<ICacheManager, CacheManager>();
 builder.Services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
 
 var app = builder.Build();
