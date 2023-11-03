@@ -31,6 +31,15 @@ namespace CommonLibrary.Mapping
 
             CreateMap<PurchaseDetail,PurchaseDetailDTO>();
             CreateMap<PurchaseDetailDTO, PurchaseDetail>();
+
+            CreateMap<Inventory, InventoryDTO>();
+            CreateMap<InventoryDTO, Inventory>();
+
+            CreateMap<NewInventoryRequest, Inventory>();
+            CreateMap<Inventory, NewInventoryRequest>();
+
+            CreateMap<NewInventoryRequest, InventoryDTO>();
+            CreateMap<InventoryDTO, NewInventoryRequest>();
         }
     }
 }
