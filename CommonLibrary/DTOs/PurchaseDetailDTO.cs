@@ -14,7 +14,5 @@ namespace CommonLibrary.DTOs
         public int itemId { get; set; }
         public float qty { get; set; }
         public float rate { get; set; }
-
-        public Purchase ?Purchase { get; set; }
     }
 }

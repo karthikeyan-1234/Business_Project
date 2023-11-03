@@ -71,7 +71,6 @@ namespace Services
         public async Task<PurchaseDetailDTO> AddPurchaseDetailAsync(NewPurchaseDetailRequest request)
         {
             var newPurchaseDetail = mapper.Map<PurchaseDetail>(request);
-            //newPurchaseDetail.Purchase = await GetPurchase(newPurchaseDetail.purchaseId);
             var addedPurchase = await purchaseDetailRepo.AddAsync(newPurchaseDetail);
             await purchaseDetailRepo.SaveChangesAsync();
             return mapper.Map<PurchaseDetailDTO>(addedPurchase);
