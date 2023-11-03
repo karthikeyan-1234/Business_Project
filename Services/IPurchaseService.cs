@@ -9,5 +9,8 @@ namespace Services
         Task<IEnumerable<PurchaseDTO>> GetAllPurchasesAsync();
         Task<PurchaseDTO> UpdatePurchaseAsync(PurchaseDTO updatePurchase);
         Task DeletePurchaseAsync(PurchaseDTO updatePurchase);
+        Task<IEnumerable<PurchaseDetailDTO>> GetPurchaseDetails(int purchaseId);
+        Task<PurchaseDetailDTO> AddPurchaseDetailAsync(NewPurchaseDetailRequest request);
+
     }
 }

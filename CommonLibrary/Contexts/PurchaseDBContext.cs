@@ -11,6 +11,7 @@ namespace CommonLibrary.Contexts
     public class PurchaseDBContext : DbContext
     {
         public DbSet<Purchase> Purchases { get; set; }
+        public DbSet<PurchaseDetail> PurchaseDetails { get; set; }
 
         public PurchaseDBContext(DbContextOptions<PurchaseDBContext> options)
             : base(options)
