@@ -3,6 +3,7 @@ using CommonLibrary.Contexts;
 using CommonLibrary.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Services;
+using Services.BackGroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,9 @@ builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<ICacheManager, CacheManager>();
 builder.Services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
 builder.Services.AddStackExchangeRedisCache(opt => { opt.Configuration = "localhost:6379"; });
+
+builder.Services.AddHostedService<InventoryBackgroundService>();
+
 
 var app = builder.Build();
 

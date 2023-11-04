@@ -22,5 +22,12 @@ namespace API_Inventory.Controllers
             var newInventory = await inventoryService.AddInventoryAsync(request);
             return Ok(newInventory);
         }
+
+        [HttpGet("GetAllInventoriesAsync", Name = "GetAllInventoriesAsync", Order = 2)]
+        public async Task<ActionResult> GetAllInventoriesAsync()
+        {
+            var inventories = await inventoryService.GetAllInventoriesAsync();
+            return Ok(inventories);
+        }
     }
 }
