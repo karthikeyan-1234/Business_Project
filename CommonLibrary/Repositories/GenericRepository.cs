@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CommonLibrary.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CommonLibrary.Repositories
 {
-    public class GenericRepository<T, D> : IGenericRepository<T,D> where T : class where D : DbContext
+    public class GenericRepository<T, D> : IGenericRepository<T,D> where T : BaseModel where D : DbContext
     {
         D? db;
         DbSet<T>? table;

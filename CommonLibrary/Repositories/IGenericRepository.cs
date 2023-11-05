@@ -1,6 +1,9 @@
-﻿namespace CommonLibrary.Repositories
+﻿using CommonLibrary.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace CommonLibrary.Repositories
 {
-    public interface IGenericRepository<T,D> where T : class
+    public interface IGenericRepository<T,D> where T : BaseModel where D : DbContext
     {
         Task<T> AddAsync(T item);
         ICollection<T> Find(Func<T, bool> predicate);

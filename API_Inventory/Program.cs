@@ -1,9 +1,14 @@
 using CommonLibrary.Caching;
 using CommonLibrary.Contexts;
+using CommonLibrary.DTOs;
+using CommonLibrary.Models;
 using CommonLibrary.Repositories;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Services;
 using Services.BackGroundServices;
+using Services.CQRS.Commands;
+using Services.CQRS.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +30,13 @@ builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<ICacheManager, CacheManager>();
 builder.Services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
 builder.Services.AddStackExchangeRedisCache(opt => { opt.Configuration = "localhost:6379"; });
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssemblyContaining<Program>();
+    cfg.Lifetime = ServiceLifetime.Scoped;
+});
+
+builder.Services.AddScoped<IRequestHandler<AddInventoryCommand, Inventory>, AddInventoryCommandHandler>();
 
 builder.Services.AddHostedService<InventoryBackgroundService>();
 
