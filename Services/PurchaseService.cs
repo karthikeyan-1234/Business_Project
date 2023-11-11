@@ -38,7 +38,7 @@ namespace Services
             await purchaseRepo.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<PurchaseDTO>> GetAllPurchasesAsync()
+        public async Task<IEnumerable<PurchaseResultDTO>> GetAllPurchasesAsync()
         {
             var purchases = await cache.TryGetAsync<IEnumerable<Purchase>>("GetAllPurchases");
             if (purchases is null)
@@ -46,7 +46,7 @@ namespace Services
                 purchases = await purchaseRepo.GetAllAsync();
                 await cache.TrySetAsync(purchases, "GetAllPurchases");
             }
-            return mapper.Map<IEnumerable<PurchaseDTO>>(purchases);
+            return mapper.Map<IEnumerable<PurchaseResultDTO>>(purchases);
         }
 
         public async Task<PurchaseDTO> UpdatePurchaseAsync(PurchaseDTO updatePurchase)

@@ -4,6 +4,7 @@ using CommonLibrary.Models;
 using CommonLibrary.Models.Requests;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,9 @@ namespace CommonLibrary.Mapping
 
             CreateMap<PurchaseDTO, Purchase>();
             CreateMap<Purchase,PurchaseDTO>();
+
+            CreateMap<PurchaseResultDTO, Purchase>();
+            CreateMap<Purchase, PurchaseResultDTO>().ForMember(x => x.purchaseDate, y => y.MapFrom(z => DateOnly.FromDateTime((DateTime)z.purchaseDate)));
 
             CreateMap<NewPurchaseDetailRequest, PurchaseDetailDTO>();
             CreateMap<PurchaseDetailDTO, NewPurchaseDetailRequest>();

@@ -1,6 +1,8 @@
 using CommonLibrary.Caching;
 using CommonLibrary.Contexts;
 using CommonLibrary.Repositories;
+
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Services;
 
@@ -25,6 +27,15 @@ builder.Services.AddScoped<ICacheManager, CacheManager>();
 builder.Services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
 builder.Services.AddStackExchangeRedisCache(opt => { opt.Configuration = "localhost:6379"; });
 
+CorsPolicyBuilder cbuilder = new CorsPolicyBuilder().AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+CorsPolicy policy = cbuilder.Build();
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("MyCors", policy);
+});
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -39,5 +50,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors("MyCors");
+
 
 app.Run();
