@@ -5,6 +5,8 @@ using CommonLibrary.DTOs;
 using CommonLibrary.Models;
 using CommonLibrary.Models.Requests;
 using CommonLibrary.Repositories;
+using MediatR;
+using Services.CQRS.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,21 +20,21 @@ namespace Services
         IGenericRepository<Inventory, InventoryDBContext> InventoryRepo;
         IMapper mapper;
         ICacheManager cache;
+        IMediator mediator;
 
-        public InventoryService(IGenericRepository<Inventory, InventoryDBContext> InventoryRepo, IMapper mapper, ICacheManager cache)
+        public InventoryService(IGenericRepository<Inventory, InventoryDBContext> InventoryRepo, IMapper mapper, ICacheManager cache,IMediator mediator)
         {
             this.mapper = mapper;
             this.cache = cache;
             this.InventoryRepo = InventoryRepo;
+            this.mediator = mediator;
         }
 
         public async Task<InventoryDTO> AddInventoryAsync(NewInventoryRequest newInventory)
         {
             var inventory = mapper.Map<Inventory>(newInventory);
-            var newInvent = await InventoryRepo.AddAsync(inventory);
-            await InventoryRepo.SaveChangesAsync();
-
-            return mapper.Map<InventoryDTO>(newInvent);
+            var result = await mediator.Send(new AddInventoryCommand(inventory));
+            return mapper.Map<InventoryDTO>(result);
         }
 
         public async Task DeleteInventoryAsync(InventoryDTO updateInventory)

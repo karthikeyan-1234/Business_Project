@@ -5,6 +5,10 @@ using CommonLibrary.DTOs;
 using CommonLibrary.Models;
 using CommonLibrary.Models.Requests;
 using CommonLibrary.Repositories;
+using MediatR;
+using Services.CQRS.Commands;
+using Services.CQRS.Notifications;
+using System.Text.Json;
 
 namespace Services
 {
@@ -14,21 +18,25 @@ namespace Services
         IGenericRepository<PurchaseDetail,PurchaseDBContext> purchaseDetailRepo;
         IMapper mapper;
         ICacheManager cache;
+        IMediator mediator;
 
-        public PurchaseService(IGenericRepository<Purchase, PurchaseDBContext> purchaseRepo, IGenericRepository<PurchaseDetail, PurchaseDBContext> purchaseDetailRepo, IMapper mapper,ICacheManager cache)
+        public PurchaseService(IGenericRepository<Purchase, PurchaseDBContext> purchaseRepo, IGenericRepository<PurchaseDetail, PurchaseDBContext> purchaseDetailRepo, 
+            IMapper mapper,ICacheManager cache,IMediator mediator)
         {
             this.purchaseRepo = purchaseRepo;
             this.purchaseDetailRepo = purchaseDetailRepo;
             this.mapper = mapper;
             this.cache = cache;
+            this.mediator = mediator;
         }
 
         public async Task<PurchaseDTO> AddPurchaseAsync(NewPurchaseRequest request)
         {
             var newPurchase = mapper.Map<Purchase>(request);
-            var addedPurchase = await purchaseRepo.AddAsync(newPurchase);
-            await purchaseRepo.SaveChangesAsync();
-            return mapper.Map<PurchaseDTO>(addedPurchase);
+            var result = await mediator.Send(new AddPurchaseCommand(newPurchase));
+            var msg = new PurchaseAddedNotification(result);
+            await mediator.Publish(msg);
+            return mapper.Map<PurchaseDTO>(result);
         }
 
         public async Task DeletePurchaseAsync(PurchaseDTO updatePurchase)
@@ -71,9 +79,11 @@ namespace Services
         public async Task<PurchaseDetailDTO> AddPurchaseDetailAsync(NewPurchaseDetailRequest request)
         {
             var newPurchaseDetail = mapper.Map<PurchaseDetail>(request);
-            var addedPurchase = await purchaseDetailRepo.AddAsync(newPurchaseDetail);
-            await purchaseDetailRepo.SaveChangesAsync();
-            return mapper.Map<PurchaseDetailDTO>(addedPurchase);
+
+            var result = await mediator.Send(new AddPurchaseDetailCommand(newPurchaseDetail));
+            var msg = new PurchaseDetailAddedNotification(result);
+            await mediator.Publish(msg);
+            return mapper.Map<PurchaseDetailDTO>(result);
         }
     }
 }
