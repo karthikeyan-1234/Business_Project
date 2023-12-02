@@ -16,8 +16,4 @@
     <ProjectReference Include="..\CommonLibrary\CommonLibrary.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="CQRS\Queries\" />
-  </ItemGroup>
-
 </Project>

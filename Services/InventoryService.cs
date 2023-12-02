@@ -55,6 +55,11 @@ namespace Services
             return mapper.Map<IEnumerable<InventoryDTO>>(Inventories);
         }
 
+        public Task<InventoryDTO> GetItemInventory(int item_id)
+        {
+            
+        }
+
         public async Task<InventoryDTO> UpdateInventoryAsync(InventoryDTO updateInventory)
         {
             var Inventory = InventoryRepo.Update(mapper.Map<Inventory>(updateInventory));

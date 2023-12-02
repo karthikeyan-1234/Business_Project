@@ -22,6 +22,12 @@ builder.Services.AddDbContext<PurchaseDBContext>(opt =>
 
 builder.Services.AddAutoMapper(typeof(CommonLibrary.Mapping.MappingConfig));
 
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssemblyContaining<Program>();
+    cfg.Lifetime = ServiceLifetime.Scoped;
+});
+
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 builder.Services.AddScoped<ICacheManager, CacheManager>();
 builder.Services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));

@@ -9,5 +9,6 @@ namespace Services
         Task<IEnumerable<InventoryDTO>> GetAllInventoriesAsync();
         Task<InventoryDTO> UpdateInventoryAsync(InventoryDTO updateInventory);
         Task DeleteInventoryAsync(InventoryDTO updateInventory);
+        Task<InventoryDTO> GetItemInventory(int item_id);
     }
 }

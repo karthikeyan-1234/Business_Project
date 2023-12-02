@@ -85,5 +85,12 @@ namespace Services
             await mediator.Publish(msg);
             return mapper.Map<PurchaseDetailDTO>(result);
         }
+
+        //public async Task<Inventory> GetInventoryForItem(int item_id)
+        //{
+        //    //send message on inventory queue to send inventory
+
+        //    //receive acknowledgement and inventory status from inventory
+        //}
     }
 }
