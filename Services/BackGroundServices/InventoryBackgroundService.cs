@@ -71,65 +71,29 @@ namespace Services.BackGroundServices
                     var message = Encoding.UTF8.GetString(body);
 
                     if (ea.RoutingKey == configuration.GetSection("RabbitMQ").GetSection("NewPurchaseDetail").GetSection("RoutingKey").Value)
-                    {
-                        using (IServiceScope scope = _serviceProvider.CreateScope())
-                        {
-                            IInventoryService scopedProcessingService = scope.ServiceProvider.GetRequiredService<IInventoryService>();
-                            var _PurchaseDetail = JsonSerializer.Deserialize<PurchaseDetail>(message);
-                            var newInventoryRequest = new NewInventoryRequest() { itemId = _PurchaseDetail.itemId, qty = _PurchaseDetail.qty, lastUpdated = DateTime.Now, Notes = "Purchase added notification via RabbitMQ" };
-                            var users = await scopedProcessingService.AddInventoryAsync(newInventoryRequest);   //Use the without cache option as the httpContextSession, can't be accessed from kgroundService                        }
-
-                        }
-                    }
+                        await HandleInventory(message);
                 };
 
-            foreach (QAndRoutingKey obj in QAndRoutingKeys)
-            {
-                channel.BasicConsume(queue: obj.Queue, autoAck: true, consumer: consumer);
-            }
+                foreach (QAndRoutingKey obj in QAndRoutingKeys)
+                    channel.BasicConsume(queue: obj.Queue, autoAck: true, consumer: consumer);
                 
-            await Task.Delay(Timeout.Infinite, stoppingToken);
+                await Task.Delay(Timeout.Infinite, stoppingToken);
             }
 
         }
 
-        void oldCode()
+
+        protected async Task HandleInventory(string message)
         {
-            var factory = new ConnectionFactory() { HostName = hostName, Port = port };
-
-            using (var connection = factory.CreateConnection())
-            using (var channel = connection.CreateModel())
+            using (IServiceScope scope = _serviceProvider.CreateScope())
             {
-                channel.ExchangeDeclare(exchange: exchange, type: ExchangeType.Topic);
-                var result = channel.QueueDeclare(queue: queue, durable: true, exclusive: false, autoDelete: false);
-                var queue_name = result.QueueName;
-                channel.QueueBind(queue: queue_name, exchange: exchange, routingKey: routingKey);
-
-                var consumer = new EventingBasicConsumer(channel);
-
-                consumer.Received += async (model, ea) =>
-                {
-                    var body = ea.Body.ToArray();
-                    var message = Encoding.UTF8.GetString(body);
-                    var _PurchaseDetail = JsonSerializer.Deserialize<PurchaseDetail>(message);
-
-
-                    using (IServiceScope scope = _serviceProvider.CreateScope())
-                    {
-                        IInventoryService scopedProcessingService =
-                            scope.ServiceProvider.GetRequiredService<IInventoryService>();
-
-                        var newInventoryRequest = new NewInventoryRequest() { itemId = _PurchaseDetail.itemId, qty = _PurchaseDetail.qty, lastUpdated = DateTime.Now, Notes = "Purchase added notification via RabbitMQ" };
-                        var users = await scopedProcessingService.AddInventoryAsync(newInventoryRequest);   //Use the without cache option as the httpContextSession, can't be accessed from BackgroundService
-                    }
-
-
-                    System.Console.WriteLine($"Received message in Inventory Service {message}");
-
-                };
-
-                channel.BasicConsume(queue: queue_name, autoAck: true, consumer: consumer);
+                IInventoryService scopedProcessingService = scope.ServiceProvider.GetRequiredService<IInventoryService>();
+                var _PurchaseDetail = JsonSerializer.Deserialize<PurchaseDetail>(message);
+                var newInventoryRequest = new NewInventoryRequest() { itemId = _PurchaseDetail.itemId, qty = _PurchaseDetail.qty, lastUpdated = DateTime.Now, Notes = "Purchase added notification via RabbitMQ" };
+                var users = await scopedProcessingService.AddInventoryAsync(newInventoryRequest);   //Use the without cache option as the httpContextSession, can't be accessed from kgroundService                        }
             }
+
         }
+
     }
 }
