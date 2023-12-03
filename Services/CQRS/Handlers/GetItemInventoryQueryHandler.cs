@@ -23,9 +23,9 @@ namespace Services.CQRS.Handlers
             this.repo = repo;
         }
 
-        public async Task<Inventory> Handle(GetItemInventoryQuery request, CancellationToken cancellationToken)
+        public async Task<Inventory>? Handle(GetItemInventoryQuery request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return  repo.Find(i => i.itemId == request.item_id).OrderByDescending(i => i.lastUpdated).FirstOrDefault();
         }
     }
 }

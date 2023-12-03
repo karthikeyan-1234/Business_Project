@@ -11,7 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Servic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API_Purchase", "API_Purchase\API_Purchase.csproj", "{228BC716-9928-4442-A361-5F47E39CD8DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API_Inventory", "API_Inventory\API_Inventory.csproj", "{1243A366-B88D-4491-B3A4-6D8B4ED37E1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API_Inventory", "API_Inventory\API_Inventory.csproj", "{1243A366-B88D-4491-B3A4-6D8B4ED37E1D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8297C112-FF18-4301-BE33-AD7A46B715EC}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

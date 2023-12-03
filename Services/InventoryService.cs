@@ -7,6 +7,8 @@ using CommonLibrary.Models.Requests;
 using CommonLibrary.Repositories;
 using MediatR;
 using Services.CQRS.Commands;
+using Services.CQRS.Queries;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,9 +57,10 @@ namespace Services
             return mapper.Map<IEnumerable<InventoryDTO>>(Inventories);
         }
 
-        public Task<InventoryDTO> GetItemInventory(int item_id)
+        public async Task<InventoryDTO> GetItemInventory(int item_id)
         {
-            
+            var result = await mediator.Send(new GetItemInventoryQuery(item_id));
+            return mapper.Map<InventoryDTO>(result);
         }
 
         public async Task<InventoryDTO> UpdateInventoryAsync(InventoryDTO updateInventory)

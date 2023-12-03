@@ -9,6 +9,7 @@ using Services;
 using Services.BackGroundServices;
 using Services.CQRS.Commands;
 using Services.CQRS.Handlers;
+using Services.CQRS.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,8 @@ builder.Services.AddMediatR(cfg =>
 });
 
 builder.Services.AddScoped<IRequestHandler<AddInventoryCommand, Inventory>, AddInventoryCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<GetItemInventoryQuery, Inventory>, GetItemInventoryQueryHandler>();
+
 
 builder.Services.AddHostedService<InventoryBackgroundService>();
 
