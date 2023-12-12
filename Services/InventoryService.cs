@@ -7,7 +7,9 @@ using CommonLibrary.Models.Requests;
 using CommonLibrary.Repositories;
 using MediatR;
 using Services.CQRS.Commands;
+using Services.CQRS.Commands.Inventory_Commands;
 using Services.CQRS.Queries;
+using Services.CQRS.Queries.Inventory_Queries;
 
 using System;
 using System.Collections.Generic;
@@ -63,12 +65,34 @@ namespace Services
             return mapper.Map<InventoryDTO>(result);
         }
 
-        public async Task<InventoryDTO> UpdateInventoryAsync(InventoryDTO updateInventory)
+        public async Task<InventoryDTO> UpsertInventoryAsync(InventoryDTO updateInventory)
         {
-            var Inventory = InventoryRepo.Update(mapper.Map<Inventory>(updateInventory));
-            await InventoryRepo.SaveChangesAsync();
-            return mapper.Map<InventoryDTO>(Inventory);
+            InventoryDTO? returnObject = null;
+            var result = await GetItemInventory(updateInventory.itemId);
 
+            if ( result != null)
+            {
+                updateInventory.id = result.id;
+                if(updateInventory.qty > 0)
+                    updateInventory.qty += result.qty;
+                else
+                {
+                    if(result.qty + updateInventory.qty >=0)
+                        updateInventory.qty += result.qty;
+                    else
+                        updateInventory.qty = 0;
+                }
+                var Inventory = InventoryRepo.Update(mapper.Map<Inventory>(updateInventory));
+                returnObject =  mapper.Map<InventoryDTO>(Inventory);
+            }
+            else
+            {
+                var Inventory = await InventoryRepo.AddAsync(mapper.Map<Inventory>(updateInventory));
+                returnObject =  mapper.Map<InventoryDTO>(Inventory);
+            }
+
+            await InventoryRepo.SaveChangesAsync();
+            return returnObject;
         }
     }
 }

@@ -1,19 +1,22 @@
 ﻿using CommonLibrary.Contexts;
 using CommonLibrary.Models;
 using CommonLibrary.Repositories;
+
 using MediatR;
-using Services.CQRS.Commands;
+
+using Services.CQRS.Commands.Inventory_Commands;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.CQRS.Handlers
+namespace Services.CQRS.Handlers.Inventory_Handlers
 {
     public class ReduceInventoryCommandHandler : IRequestHandler<ReduceInventoryCommand, float>
     {
-        IGenericRepository<Inventory,InventoryDBContext> _repository;
+        IGenericRepository<Inventory, InventoryDBContext> _repository;
 
         public ReduceInventoryCommandHandler(IGenericRepository<Inventory, InventoryDBContext> _repository)
         {

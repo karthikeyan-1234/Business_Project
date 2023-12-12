@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.CQRS.Queries
+namespace Services.CQRS.Queries.Inventory_Queries
 {
     public class GetItemInventoryQuery : IRequest<Inventory>
     {

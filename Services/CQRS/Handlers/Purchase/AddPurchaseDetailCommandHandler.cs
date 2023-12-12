@@ -1,19 +1,22 @@
 ﻿using CommonLibrary.Contexts;
 using CommonLibrary.Models;
 using CommonLibrary.Repositories;
+
 using MediatR;
-using Services.CQRS.Commands;
+
+using Services.CQRS.Commands.Purchase_Commands;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.CQRS.Handlers
+namespace Services.CQRS.Handlers.Purchase_Handlers
 {
     public class AddPurchaseDetailCommandHandler : IRequestHandler<AddPurchaseDetailCommand, PurchaseDetail>
     {
-        IGenericRepository<PurchaseDetail,PurchaseDBContext>  _purchaseRepository;
+        IGenericRepository<PurchaseDetail, PurchaseDBContext> _purchaseRepository;
 
         public AddPurchaseDetailCommandHandler(IGenericRepository<PurchaseDetail, PurchaseDBContext> _purchaseRepository)
         {

@@ -2,7 +2,7 @@
 using CommonLibrary.Models;
 using CommonLibrary.Repositories;
 
-using Services.CQRS.Commands;
+using Services.CQRS.Commands.Material_Commands;
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.CQRS.Handlers
+namespace Services.CQRS.Handlers.Material_Handlers
 {
     public class AddMaterialCommandHandler
     {

@@ -4,6 +4,7 @@ using Services;
 using CommonLibrary.Repositories;
 using CommonLibrary.Caching;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Services.BackGroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,7 @@ builder.Services.AddCors(opt =>
     opt.AddPolicy("MyCors", policy);
 });
 
+builder.Services.AddHostedService<MaterialBackgroundService>();
 
 
 var app = builder.Build();

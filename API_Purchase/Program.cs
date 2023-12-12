@@ -1,10 +1,18 @@
 using CommonLibrary.Caching;
 using CommonLibrary.Contexts;
+using CommonLibrary.Models;
 using CommonLibrary.Repositories;
+
+using MediatR;
 
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+
 using Services;
+using Services.CQRS.Commands.Purchase_Commands;
+using Services.CQRS.Handlers.Inventory_Handlers;
+using Services.CQRS.Handlers.Purchase_Handlers;
+using Services.CQRS.Notifications.Inventory_Notifications;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +48,15 @@ builder.Services.AddCors(opt =>
     opt.AddPolicy("MyCors", policy);
 });
 
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssemblyContaining<Program>();
+    cfg.Lifetime = ServiceLifetime.Scoped;
+});
 
+builder.Services.AddScoped<IRequestHandler<AddPurchaseCommand, Purchase>, AddPurchaseCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<AddPurchaseDetailCommand, PurchaseDetail>, AddPurchaseDetailCommandHandler>();
+builder.Services.AddScoped<INotificationHandler<UpdateInventoryNotification>, UpdateInventoryNotificationHandler>();
 
 var app = builder.Build();
 

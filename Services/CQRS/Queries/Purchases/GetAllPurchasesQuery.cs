@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.CQRS.Queries
+namespace Services.CQRS.Queries.Purchase_Queries
 {
-    public class GetAllPurchasesQuery: IRequest<IEnumerable<Purchase>>
+    public class GetAllPurchasesQuery : IRequest<IEnumerable<Purchase>>
     {
         public GetAllPurchasesQuery()
         {

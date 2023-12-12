@@ -1,11 +1,12 @@
 ﻿using CommonLibrary.Contexts;
 using CommonLibrary.Models;
 using CommonLibrary.Repositories;
+
 using MediatR;
-using Services.CQRS.Commands;
 
+using Services.CQRS.Commands.Inventory_Commands;
 
-namespace Services.CQRS.Handlers
+namespace Services.CQRS.Handlers.Inventory_Handlers
 {
     public class AddInventoryCommandHandler : IRequestHandler<AddInventoryCommand, Inventory>
     {

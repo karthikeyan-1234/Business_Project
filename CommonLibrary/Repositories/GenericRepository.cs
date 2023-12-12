@@ -47,13 +47,13 @@ namespace CommonLibrary.Repositories
         }
 
         public async Task<T> GetById(object id)
-        {
+        {            
             return await table.FindAsync(id);
         }
 
         public ICollection<T> Find(Func<T, bool> predicate)
         {
-            return table.Where(predicate).ToList();
+            return table.AsNoTracking().Where(predicate).ToList();
         }
     }
 }

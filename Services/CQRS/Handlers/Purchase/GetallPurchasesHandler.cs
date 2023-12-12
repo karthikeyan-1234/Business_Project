@@ -4,7 +4,7 @@ using CommonLibrary.Repositories;
 
 using MediatR;
 
-using Services.CQRS.Queries;
+using Services.CQRS.Queries.Purchase_Queries;
 
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.CQRS.Handlers
+namespace Services.CQRS.Handlers.Purchase_Handlers
 {
     public class GetallPurchasesHandler : IRequestHandler<GetAllPurchasesQuery, IEnumerable<Purchase>>
     {
@@ -25,7 +25,7 @@ namespace Services.CQRS.Handlers
 
         public async Task<IEnumerable<Purchase>> Handle(GetAllPurchasesQuery request, CancellationToken cancellationToken)
         {
-           return await repo.GetAllAsync();
+            return await repo.GetAllAsync();
         }
     }
 }

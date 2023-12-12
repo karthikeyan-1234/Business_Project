@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.CQRS.Commands
+namespace Services.CQRS.Commands.Material_Commands
 {
-    public class AddMaterialCommand:IRequest<Material>
+    public class AddMaterialCommand : IRequest<Material>
     {
         public Material newMaterial { get; set; }
 

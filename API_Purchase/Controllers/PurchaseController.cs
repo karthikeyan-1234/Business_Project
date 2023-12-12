@@ -52,10 +52,31 @@ namespace API_Material.Controllers
             return Ok(result);
         }
 
-        [HttpPost("AddPurchaseDetails", Name = "AddPurchaseDetails", Order = 6)]
+        [HttpGet("GetInventoryForItem", Name = "GetInventoryForItem", Order = 6)]
+        public async Task<ActionResult> GetInventoryForItem(int item_id)
+        {
+            var result = await purchaseService.GetInventoryStatus(item_id);
+            return Ok(result);
+        }
+
+        [HttpPost("AddPurchaseDetails", Name = "AddPurchaseDetails", Order = 7)]
         public async Task<ActionResult> AddPurchaseDetails(NewPurchaseDetailRequest newPurchaseDetailRequest)
         {
             var result = await purchaseService.AddPurchaseDetailAsync(newPurchaseDetailRequest);
+            return Ok(result);
+        }
+
+        [HttpPut("UpdatePurchaseDetails", Name = "UpdatePurchaseDetails", Order = 8)]
+        public async Task<ActionResult> UpdatePurchaseDetails(UpdatePurchaseDetailRequest updatedPurchaseDetailRequest)
+        {
+            var result = await purchaseService.UpdatePurchaseDetailAsync(updatedPurchaseDetailRequest);
+            return Ok(result);
+        }
+
+        [HttpDelete("DeletePurchaseDetails", Name = "DeletePurchaseDetails", Order = 9)]
+        public async Task<ActionResult> DeletePurchaseDetails(UpdatePurchaseDetailRequest deletePurchaseDetailRequest)
+        {
+            var result = await purchaseService.DeletePurchaseDetailAsync(deletePurchaseDetailRequest);
             return Ok(result);
         }
     }

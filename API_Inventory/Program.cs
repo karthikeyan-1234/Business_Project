@@ -3,13 +3,16 @@ using CommonLibrary.Contexts;
 using CommonLibrary.DTOs;
 using CommonLibrary.Models;
 using CommonLibrary.Repositories;
+
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
+
 using Services;
 using Services.BackGroundServices;
-using Services.CQRS.Commands;
-using Services.CQRS.Handlers;
-using Services.CQRS.Queries;
+using Services.CQRS.Commands.Inventory_Commands;
+using Services.CQRS.Handlers.Inventory_Handlers;
+using Services.CQRS.Queries.Inventory_Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
