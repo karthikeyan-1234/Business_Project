@@ -146,12 +146,18 @@ namespace Services
         public async Task<string> GetInventoryStatus(int item_id)
         {
             var result = await mediator.Send(new GetItemInventoryQueryBroker(item_id.ToString()));
-            return Utility.JsonObjectSerializer(result);
+            if (result is not null)
+                return Utility.JsonObjectSerializer(result);
+            else
+                return default;
         }
 
         public async Task<PurchaseDetailDTO> UpdatePurchaseDetailAsync(UpdatePurchaseDetailRequest request)
         {
+            InventoryDTO ?current_inventory = null;
 
+
+            #region Purchase details update
             //Get current purchase details
 
             var oldDetail = GetPurchaseDetailEntry(request.id);
@@ -161,34 +167,48 @@ namespace Services
 
             var newDetail = mapper.Map<PurchaseDetail>(request);
             var result = await mediator.Send(new UpdatePurchaseDetailCommand(newDetail));
+            #endregion
 
 
             //Get current inventory status for the item
 
-            var inventory_str = await GetInventoryStatus(request.itemId);
-            var current_inventory = JsonSerializer.Deserialize<InventoryDTO>(inventory_str);
+            var inventory_str = await GetInventoryStatus(request.itemId); // Handle null JSON Deserialization here
 
+            if (inventory_str is not null)
+            {
+                current_inventory = JsonSerializer.Deserialize<InventoryDTO>(inventory_str);
+                Console.WriteLine("Current Inventory...");
+                Console.Write(inventory_str);
+            }
+            else
+            {
+                Console.WriteLine($"Unable to get current inventory for item : {request.itemId}, from Inventory service");
+            }
 
+            #region Inventory Update
+            /* Disable Inventory Update for the time being
             //If new value of purchase detail is lower than old value, then reduce the difference in Inventory for the item
 
             if (newDetail.qty < oldDetail.qty && current_inventory is not null)
-                newQty = current_inventory.qty - (oldDetail.qty - newDetail.qty);
+                newQty = (oldDetail.qty - newDetail.qty) * -1; //Send negative value to Inventory to reduce
 
             //If new value of purchase detail is higher than old value, then increase the difference in Inventory for the item
 
             else if (newDetail.qty > oldDetail.qty && current_inventory is not null)
-                newQty = current_inventory.qty + (newDetail.qty - oldDetail.qty);
+                newQty = newDetail.qty - oldDetail.qty; //Send positive value to Inventory to increase
 
-            else
+            else if(current_inventory is not null)
                 newQty = current_inventory.qty;
 
             
-            result.qty = newQty;
-
-
+            result.qty = newQty;     
 
             var msg = new UpdateInventoryNotification(result);
             await mediator.Publish(msg);
+
+            */
+            #endregion
+
             return mapper.Map<PurchaseDetailDTO>(result);
         }
 

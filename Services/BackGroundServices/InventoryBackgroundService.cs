@@ -93,6 +93,8 @@ namespace Services.BackGroundServices
                         await UpdateInventory(guid, message);
                     }
                     #endregion
+
+                    channel.BasicAck(ea.DeliveryTag, false);
                 }
             };
 
@@ -128,6 +130,7 @@ namespace Services.BackGroundServices
 
             Console.WriteLine("3. Sending inventory response to Purchase service... " + DateTime.Now);
             Console.WriteLine(guid);
+            Console.WriteLine(JsonSerializer.Serialize(inventoryData));
 
             channel.BasicPublish(exchange: "ERP", routingKey: inventory_res_routingKey, basicProperties: properties, body: inventory_status);
         }
