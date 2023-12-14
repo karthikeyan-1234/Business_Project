@@ -1,17 +1,15 @@
-﻿using CommonLibrary.Models;
-using CommonLibrary.Models.Requests;
+﻿using CommonLibrary.DTOs;
+using CommonLibrary.Models;
+using CommonLibrary.Utilities;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
+
 
 namespace Services.BackGroundServices
 {
@@ -19,6 +17,7 @@ namespace Services.BackGroundServices
 
     public class InventoryBackgroundService : BackgroundService
     {
+        #region Declaration
         private string? hostName;
         private int port;
         private string? exchange;
@@ -32,7 +31,9 @@ namespace Services.BackGroundServices
         private IConnection connection;
         private IModel channel;
         private readonly IServiceProvider _serviceProvider;
+        #endregion
 
+        #region Constructor
         public InventoryBackgroundService(IConfiguration configuration, IServiceProvider _serviceProvider)
         {
             hostName = configuration.GetSection("RabbitMQ").GetSection("HostName").Value;
@@ -52,6 +53,7 @@ namespace Services.BackGroundServices
 
             this._serviceProvider = _serviceProvider;
         }
+        #endregion
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -78,7 +80,7 @@ namespace Services.BackGroundServices
                         Console.WriteLine($"2. Received purchase details from Purchase service...{message} @ " + DateTime.Now);
                         Console.WriteLine(guid);
 
-                        SendInventoryResponse(guid, message);
+                        await SendInventoryResponse(guid, message);
                     }
                     #endregion
 
@@ -101,7 +103,7 @@ namespace Services.BackGroundServices
         }
 
 
-        void SendInventoryResponse(string guid, string message)
+        async Task SendInventoryResponse(string guid, string message)
         {
             channel.ExchangeDeclare(exchange: "ERP", type: ExchangeType.Topic);
             channel.QueueDeclare(queue: "Inventory_Responses", durable: true, exclusive: false, autoDelete: true);
@@ -111,7 +113,18 @@ namespace Services.BackGroundServices
             properties.DeliveryMode = 2;
             properties.CorrelationId = guid;
 
-            var inventory_status = Encoding.UTF8.GetBytes("Inventory is 1000" + " [" + message + "]");
+            InventoryDTO? inventoryData = default;
+
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var inventoryService = scope.ServiceProvider.GetRequiredService<IInventoryService>();
+                inventoryData = await inventoryService.GetItemInventory(Convert.ToInt32(message));
+            }
+
+            //var inventory_status = Encoding.UTF8.GetBytes("Inventory is 1000" + " [" + message + "]");
+
+
+            var inventory_status = Utility.SerializeAndGetBytes(inventoryData);
 
             Console.WriteLine("3. Sending inventory response to Purchase service... " + DateTime.Now);
             Console.WriteLine(guid);

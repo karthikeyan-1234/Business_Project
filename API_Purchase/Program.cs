@@ -10,9 +10,11 @@ using Microsoft.EntityFrameworkCore;
 
 using Services;
 using Services.CQRS.Commands.Purchase_Commands;
+using Services.CQRS.Handlers.Inventory.Broker;
 using Services.CQRS.Handlers.Inventory_Handlers;
 using Services.CQRS.Handlers.Purchase_Handlers;
 using Services.CQRS.Notifications.Inventory_Notifications;
+using Services.CQRS.Queries.Inventory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,7 +58,9 @@ builder.Services.AddMediatR(cfg =>
 
 builder.Services.AddScoped<IRequestHandler<AddPurchaseCommand, Purchase>, AddPurchaseCommandHandler>();
 builder.Services.AddScoped<IRequestHandler<AddPurchaseDetailCommand, PurchaseDetail>, AddPurchaseDetailCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<UpdatePurchaseDetailCommand, PurchaseDetail>, UpdatePurchaseDetailCommandHandler>();
 builder.Services.AddScoped<INotificationHandler<UpdateInventoryNotification>, UpdateInventoryNotificationHandler>();
+builder.Services.AddScoped<IRequestHandler<GetItemInventoryQueryBroker, Inventory>, GetItemInventoryQueryBrokerHandler>();
 
 var app = builder.Build();
 

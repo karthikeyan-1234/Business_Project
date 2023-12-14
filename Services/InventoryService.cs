@@ -73,15 +73,6 @@ namespace Services
             if ( result != null)
             {
                 updateInventory.id = result.id;
-                if(updateInventory.qty > 0)
-                    updateInventory.qty += result.qty;
-                else
-                {
-                    if(result.qty + updateInventory.qty >=0)
-                        updateInventory.qty += result.qty;
-                    else
-                        updateInventory.qty = 0;
-                }
                 var Inventory = InventoryRepo.Update(mapper.Map<Inventory>(updateInventory));
                 returnObject =  mapper.Map<InventoryDTO>(Inventory);
             }

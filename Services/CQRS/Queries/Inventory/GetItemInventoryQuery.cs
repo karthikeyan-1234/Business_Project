@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Services.CQRS.Queries.Inventory_Queries
 {
-    public class GetItemInventoryQuery : IRequest<Inventory>
+    public class GetItemInventoryQuery : IRequest<CommonLibrary.Models.Inventory>
     {
         public int item_id { get; set; }
 

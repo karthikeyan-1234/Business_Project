@@ -16,9 +16,9 @@ namespace Services.CQRS.Handlers.Inventory_Handlers
 {
     public class ReduceInventoryCommandHandler : IRequestHandler<ReduceInventoryCommand, float>
     {
-        IGenericRepository<Inventory, InventoryDBContext> _repository;
+        IGenericRepository<CommonLibrary.Models.Inventory, InventoryDBContext> _repository;
 
-        public ReduceInventoryCommandHandler(IGenericRepository<Inventory, InventoryDBContext> _repository)
+        public ReduceInventoryCommandHandler(IGenericRepository<CommonLibrary.Models.Inventory, InventoryDBContext> _repository)
         {
             this._repository = _repository;
         }
@@ -29,7 +29,7 @@ namespace Services.CQRS.Handlers.Inventory_Handlers
 
             if (currentInventory.qty >= request.qty)
             {
-                _repository.Update(new Inventory() { id = currentInventory.id, itemId = currentInventory.itemId, qty = currentInventory.qty - request.qty, lastUpdated = DateTime.Now, Notes = "Inventory updated" });
+                _repository.Update(new CommonLibrary.Models.Inventory() { id = currentInventory.id, itemId = currentInventory.itemId, qty = currentInventory.qty - request.qty, lastUpdated = DateTime.Now, Notes = "Inventory updated" });
                 await _repository.SaveChangesAsync();
                 return currentInventory.qty - request.qty;
             }

@@ -5,11 +5,12 @@ using CommonLibrary.DTOs;
 using CommonLibrary.Models;
 using CommonLibrary.Models.Requests;
 using CommonLibrary.Repositories;
+using CommonLibrary.Utilities;
+
 using MediatR;
 
 using Microsoft.Extensions.Configuration;
 
-using Newtonsoft.Json;
 
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -18,6 +19,7 @@ using Services.CQRS.Commands;
 using Services.CQRS.Commands.Purchase_Commands;
 using Services.CQRS.Notifications;
 using Services.CQRS.Notifications.Inventory_Notifications;
+using Services.CQRS.Queries.Inventory;
 
 using System.Text;
 using System.Text.Json;
@@ -101,6 +103,9 @@ namespace Services
                 purchases = await purchaseRepo.GetAllAsync();
                 await cache.TrySetAsync(purchases, "GetAllPurchases");
             }
+
+
+
             return mapper.Map<IEnumerable<PurchaseResultDTO>>(purchases);
         }
 
@@ -123,6 +128,11 @@ namespace Services
             return mapper.Map<IEnumerable<PurchaseDetailDTO>>(purchase.PurchaseDetails);
         }
 
+        PurchaseDetail GetPurchaseDetailEntry(int id)
+        {
+            return purchaseDetailRepo.Find(p => p.id == id).FirstOrDefault();
+        }
+
         public async Task<PurchaseDetailDTO> AddPurchaseDetailAsync(NewPurchaseDetailRequest request)
         {
             var newPurchaseDetail = mapper.Map<PurchaseDetail>(request);
@@ -135,65 +145,48 @@ namespace Services
 
         public async Task<string> GetInventoryStatus(int item_id)
         {
-            SendInventoryRequest(item_id);
-            return await GetInventory();
-        }
-
-        void SendInventoryRequest(int item_id)
-        {
-            guid = Guid.NewGuid().ToString();
-
-            var properties = channel.CreateBasicProperties();
-            properties.Persistent = true;
-            properties.DeliveryMode = 2;
-            properties.CorrelationId = guid;
-
-            var inventory_status = Encoding.UTF8.GetBytes(item_id.ToString());
-
-            Console.WriteLine("1. Sending inventory rquest to Inventory service... " + DateTime.Now);
-            Console.WriteLine(guid);
-
-            channel.BasicPublish(exchange: exchange, routingKey: inventory_req_routingKey, basicProperties: properties, body: inventory_status);
-        }
-
-        async Task<string> GetInventory()
-        {
-            string final_result = String.Empty;
-
-            #region Wait for response from Inventory API with Inventory status
-
-            Console.WriteLine("4. Setting up consumer to detect incoming inventory response... " + DateTime.Now);
-            Console.WriteLine($"5. Finding messages from exchange {exchange} with queue Inventory_Responses with routing key {inventory_res_routingKey}");
-
-            var consumer = new EventingBasicConsumer(channel);
-
-            consumer.Received += (model, ea) =>
-            {
-                if (ea.BasicProperties.CorrelationId == guid)
-                {
-                    if (ea.RoutingKey == inventory_res_routingKey)
-                    {
-                        var body = ea.Body.ToArray();
-                        var message = Encoding.UTF8.GetString(body);
-                        Console.WriteLine($"6. Inventory status obtained.. {guid}!!");
-                        Console.WriteLine(message);
-                        final_result = message;
-                    }
-                }
-            };
-
-            channel.BasicConsume(queue: "Inventory_Responses", autoAck: false, consumer: consumer);
-
-            await Task.Delay(5000);
-
-            return final_result;
-            #endregion
+            var result = await mediator.Send(new GetItemInventoryQueryBroker(item_id.ToString()));
+            return Utility.JsonObjectSerializer(result);
         }
 
         public async Task<PurchaseDetailDTO> UpdatePurchaseDetailAsync(UpdatePurchaseDetailRequest request)
         {
-            var newPurchaseDetail = mapper.Map<PurchaseDetail>(request);
-            var result = await mediator.Send(new UpdatePurchaseDetailCommand(newPurchaseDetail));
+
+            //Get current purchase details
+
+            var oldDetail = GetPurchaseDetailEntry(request.id);
+            float newQty = 0;
+
+            //Now update the purchase details
+
+            var newDetail = mapper.Map<PurchaseDetail>(request);
+            var result = await mediator.Send(new UpdatePurchaseDetailCommand(newDetail));
+
+
+            //Get current inventory status for the item
+
+            var inventory_str = await GetInventoryStatus(request.itemId);
+            var current_inventory = JsonSerializer.Deserialize<InventoryDTO>(inventory_str);
+
+
+            //If new value of purchase detail is lower than old value, then reduce the difference in Inventory for the item
+
+            if (newDetail.qty < oldDetail.qty && current_inventory is not null)
+                newQty = current_inventory.qty - (oldDetail.qty - newDetail.qty);
+
+            //If new value of purchase detail is higher than old value, then increase the difference in Inventory for the item
+
+            else if (newDetail.qty > oldDetail.qty && current_inventory is not null)
+                newQty = current_inventory.qty + (newDetail.qty - oldDetail.qty);
+
+            else
+                newQty = current_inventory.qty;
+
+            
+            result.qty = newQty;
+
+
+
             var msg = new UpdateInventoryNotification(result);
             await mediator.Publish(msg);
             return mapper.Map<PurchaseDetailDTO>(result);
