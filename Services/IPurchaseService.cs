@@ -16,6 +16,6 @@ namespace Services
         Task<string> GetInventoryStatus(int item_id);
         Task<PurchaseDetailDTO> UpdatePurchaseDetailAsync(UpdatePurchaseDetailRequest request);
         Task<PurchaseDetailDTO> DeletePurchaseDetailAsync(UpdatePurchaseDetailRequest request);
-
+        Task<IEnumerable<PurchaseDetailDTO>> GetPurchaseDetailsByDateRangeAsync(DateTime startDate, DateTime endDate);
     }
 }

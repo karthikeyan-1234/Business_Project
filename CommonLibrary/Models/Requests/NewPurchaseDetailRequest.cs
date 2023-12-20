@@ -12,5 +12,6 @@ namespace CommonLibrary.Models.Requests
         public int itemId { get; set; }
         public float qty { get; set; }
         public float rate { get; set; }
+        public DateTime lastEditat { get; set; }
     }
 }

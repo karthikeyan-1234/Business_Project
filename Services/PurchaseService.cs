@@ -20,6 +20,7 @@ using Services.CQRS.Commands.Purchase_Commands;
 using Services.CQRS.Notifications;
 using Services.CQRS.Notifications.Inventory_Notifications;
 using Services.CQRS.Queries.Inventory;
+using Services.CQRS.Queries.Purchases;
 
 using System.Text;
 using System.Text.Json;
@@ -220,6 +221,16 @@ namespace Services
             var msg = new UpdateInventoryNotification(result);
             await mediator.Publish(msg);
             return mapper.Map<PurchaseDetailDTO>(result);
+        }
+
+        public async Task<IEnumerable<PurchaseDetailDTO>> GetPurchaseDetailsByDateRangeAsync(DateTime startDate, DateTime endDate)
+        {
+            var qry = new GetPurchaseDetailsByDateQuery(startDate, endDate);
+            var result = await mediator.Send(qry);
+            if(result is not null)
+                return mapper.Map<IEnumerable<PurchaseDetailDTO>>(result);
+
+            return default;
         }
     }
 }

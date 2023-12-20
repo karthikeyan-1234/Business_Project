@@ -15,6 +15,7 @@ using Services.CQRS.Handlers.Inventory_Handlers;
 using Services.CQRS.Handlers.Purchase_Handlers;
 using Services.CQRS.Notifications.Inventory_Notifications;
 using Services.CQRS.Queries.Inventory;
+using Services.CQRS.Queries.Purchases;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +62,9 @@ builder.Services.AddScoped<IRequestHandler<AddPurchaseDetailCommand, PurchaseDet
 builder.Services.AddScoped<IRequestHandler<UpdatePurchaseDetailCommand, PurchaseDetail>, UpdatePurchaseDetailCommandHandler>();
 builder.Services.AddScoped<INotificationHandler<UpdateInventoryNotification>, UpdateInventoryNotificationHandler>();
 builder.Services.AddScoped<IRequestHandler<GetItemInventoryQueryBroker, Inventory>, GetItemInventoryQueryBrokerHandler>();
+builder.Services.AddScoped<IRequestHandler<DeletePurchaseDetailCommand, PurchaseDetail>, DeletePurchaseDetailCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<GetPurchaseDetailsByDateQuery, IEnumerable<PurchaseDetail>>, GetPurchaseDetailsByDateQueryHandler>();
+
 
 var app = builder.Build();
 

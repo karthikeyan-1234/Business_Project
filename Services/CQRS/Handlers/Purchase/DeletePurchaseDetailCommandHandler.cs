@@ -24,7 +24,8 @@ namespace Services.CQRS.Handlers.Purchase_Handlers
 
         public async Task<PurchaseDetail> Handle(DeletePurchaseDetailCommand request, CancellationToken cancellationToken)
         {
-            repo.Delete(request.deletePurchaseDetail);
+            var rec = repo.Find(p => p.id == request.deletePurchaseDetail.id).FirstOrDefault();
+            repo.Delete(rec);
             await repo.SaveChangesAsync();
             return request.deletePurchaseDetail;
         }

@@ -79,5 +79,12 @@ namespace API_Material.Controllers
             var result = await purchaseService.DeletePurchaseDetailAsync(deletePurchaseDetailRequest);
             return Ok(result);
         }
+
+        [HttpGet("GetPurchaseDetailsByDate", Name = "GetPurchaseDetailsByDate", Order = 10)]
+        public async Task<ActionResult> GetPurchaseDetailsByDate(DateTime startDate, DateTime endDate)
+        {
+            var result = await purchaseService.GetPurchaseDetailsByDateRangeAsync(startDate, endDate);
+            return Ok(result);
+        }
     }
 }

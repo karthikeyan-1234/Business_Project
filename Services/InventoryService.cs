@@ -65,22 +65,28 @@ namespace Services
             return mapper.Map<InventoryDTO>(result);
         }
 
-        public async Task<InventoryDTO> UpsertInventoryAsync(InventoryDTO updateInventory)
+        public async Task<InventoryDTO> UpsertInventoryAsync(InventoryDTO incomingInventory)
         {
             InventoryDTO? returnObject = null;
-            var result = await GetItemInventory(updateInventory.itemId);
+            var existing = await GetItemInventory(incomingInventory.itemId);
 
-            if ( result != null)
+            if ( existing != null)
             {
-                updateInventory.id = result.id;
-                updateInventory.qty = result.qty + updateInventory.qty;
+                incomingInventory.id = existing.id;
+                if(incomingInventory.qty <0)
+                {
+                    if (incomingInventory.qty * -1 >= existing.qty) //If incoming qty is >= existing inventory then zero out the inventory
+                        incomingInventory.qty = 0;
+                }
+                else
+                    incomingInventory.qty = existing.qty + incomingInventory.qty; //Else add or increase inventory
 
-                var Inventory = InventoryRepo.Update(mapper.Map<Inventory>(updateInventory));
+                var Inventory = InventoryRepo.Update(mapper.Map<Inventory>(incomingInventory));
                 returnObject =  mapper.Map<InventoryDTO>(Inventory);
             }
             else
             {
-                var Inventory = await InventoryRepo.AddAsync(mapper.Map<Inventory>(updateInventory));
+                var Inventory = await InventoryRepo.AddAsync(mapper.Map<Inventory>(incomingInventory));
                 returnObject =  mapper.Map<InventoryDTO>(Inventory);
             }
 
