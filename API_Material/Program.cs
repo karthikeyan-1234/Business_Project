@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Services.BackGroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 // Add services to the container.
 
@@ -22,10 +23,10 @@ builder.Services.AddDbContext<MaterialDBContext>(opt =>
 
 builder.Services.AddAutoMapper(typeof(CommonLibrary.Mapping.MappingConfig));
 
-builder.Services.AddScoped<IMaterialService, MaterialService>();
 builder.Services.AddScoped<ICacheManager, CacheManager>();
+builder.Services.AddScoped<IMaterialService, MaterialService>();
 builder.Services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
-builder.Services.AddStackExchangeRedisCache(opt => { opt.Configuration = "localhost:6379"; });
+builder.Services.AddStackExchangeRedisCache(opt => { opt.Configuration = configuration.GetSection("Redis").Value; });
 
 CorsPolicyBuilder cbuilder = new CorsPolicyBuilder().AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
 CorsPolicy policy = cbuilder.Build();

@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 
+using CommonLibrary.Caching;
 using CommonLibrary.Contexts;
 using CommonLibrary.DTOs;
 using CommonLibrary.Models;
 using CommonLibrary.Models.Requests;
 using CommonLibrary.Repositories;
+
 
 using System;
 using System.Collections.Generic;
@@ -18,11 +20,13 @@ namespace Services
     {
         IGenericRepository<Material, MaterialDBContext> repo;
         IMapper mapper;
+        ICacheManager cache;
 
-        public MaterialService(IGenericRepository<Material, MaterialDBContext> repo,IMapper mapper)
+        public MaterialService(IGenericRepository<Material, MaterialDBContext> repo,IMapper mapper,ICacheManager cache)
         {
             this.repo = repo;
             this.mapper = mapper;
+            this.cache = cache;
         }
 
         public async Task<MaterialDTO> AddMaterialAsync(NewMaterialRequest request)
@@ -42,7 +46,15 @@ namespace Services
 
         public async Task<IEnumerable<MaterialDTO>> GetAllMaterialsAsync()
         {
-            return mapper.Map<IEnumerable<MaterialDTO>>(await repo.GetAllAsync());
+            var result = await cache.TryGetAsync<IEnumerable<MaterialDTO>>("MaterialListKey");
+
+            if (result == null)
+            {
+                result = mapper.Map<IEnumerable<MaterialDTO>>(await repo.GetAllAsync());
+                await cache.TrySetAsync(result, "MaterialListKey");
+            }
+
+            return result;
         }
 
         public Task<MaterialDTO> GetMaterialDetails(int MaterialId)

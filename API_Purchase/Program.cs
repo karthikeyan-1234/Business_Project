@@ -65,7 +65,6 @@ builder.Services.AddScoped<IRequestHandler<GetItemInventoryQueryBroker, Inventor
 builder.Services.AddScoped<IRequestHandler<DeletePurchaseDetailCommand, PurchaseDetail>, DeletePurchaseDetailCommandHandler>();
 builder.Services.AddScoped<IRequestHandler<GetPurchaseDetailsByDateQuery, IEnumerable<PurchaseDetail>>, GetPurchaseDetailsByDateQueryHandler>();
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -82,6 +81,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseCors("MyCors");
-
 
 app.Run();
